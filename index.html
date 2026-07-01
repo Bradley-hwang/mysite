@@ -355,6 +355,7 @@
 
   <script>
     let auth0Client = null;
+    const APP_URL = window.location.origin + window.location.pathname;
 
     async function configureClient() {
       if (!window.AUTH0_CONFIG) {
@@ -364,7 +365,7 @@
         domain: window.AUTH0_CONFIG.domain,
         clientId: window.AUTH0_CONFIG.clientId,
         authorizationParams: {
-          redirect_uri: window.location.origin,
+          redirect_uri: APP_URL,
         },
       });
     }
@@ -391,7 +392,7 @@
 
     function logout() {
       auth0Client.logout({
-        logoutParams: { returnTo: window.location.origin },
+        logoutParams: { returnTo: APP_URL },
       });
     }
 
@@ -402,7 +403,7 @@
         const query = window.location.search;
         if (query.includes("code=") && query.includes("state=")) {
           await auth0Client.handleRedirectCallback();
-          window.history.replaceState({}, document.title, "/");
+          window.history.replaceState({}, document.title, window.location.pathname);
         }
 
         await updateUI();
