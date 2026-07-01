@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Auth0 홈페이지</title>
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
+  <script src="config.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background: #fff;
+      border-bottom: 1px solid #e5e5e7;
+    }
+    header .logo {
+      font-weight: 700;
+      font-size: 20px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      color: #fff;
+      padding: 64px 20px 96px;
+      text-align: center;
+    }
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      background: #fff;
+      color: #1e3a8a;
+      font-size: 42px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid rgba(255,255,255,0.3);
+      overflow: hidden;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 15%;
+    }
+    .hero h1 {
+      margin: 0 0 6px;
+      font-size: 30px;
+    }
+    .hero .title {
+      font-size: 17px;
+      opacity: 0.9;
+      margin: 0 0 4px;
+    }
+    .hero .location {
+      font-size: 14px;
+      opacity: 0.7;
+      margin: 0 0 4px;
+    }
+    .hero .education {
+      font-size: 13px;
+      opacity: 0.65;
+      margin: 0;
+    }
+    .links {
+      margin-top: 20px;
+    }
+    .links a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 8px 16px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+    .links a:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #0f62fe;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button:hover { background: #0353e9; }
+    button.secondary {
+      background: transparent;
+      color: #0f62fe;
+      border: 1px solid #0f62fe;
+    }
+    main {
+      max-width: 720px;
+      margin: -50px auto 60px;
+      padding: 0 20px;
+    }
+    section.card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px 28px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      margin-bottom: 28px;
+      text-align: left;
+    }
+    section.card h2 {
+      font-size: 22px;
+      margin: 0 0 16px;
+    }
+    .about-content {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .about-content img {
+      width: 140px;
+      height: 140px;
+      border-radius: 12px;
+      object-fit: cover;
+      object-position: 50% 15%;
+      flex-shrink: 0;
+    }
+    .about-content p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #444;
+    }
+    .timeline {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border-left: 2px solid #e5e5e7;
+    }
+    .timeline li {
+      position: relative;
+      padding: 0 0 24px 24px;
+    }
+    .timeline li:last-child { padding-bottom: 0; }
+    .timeline li::before {
+      content: "";
+      position: absolute;
+      left: -6px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #0f62fe;
+    }
+    .timeline .company {
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .timeline .role {
+      font-size: 14px;
+      color: #333;
+    }
+    .timeline .period {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+    .timeline ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+    }
+    .booking-card {
+      text-align: center;
+    }
+    .booking-card p {
+      color: #666;
+      font-size: 14px;
+    }
+    #hero-actions {
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    #hero-actions p {
+      margin-top: 0;
+    }
+    .profile-card {
+      display: none;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 360px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .profile-card img {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      margin-bottom: 12px;
+    }
+    .profile-card h2 { margin: 0 0 4px; font-size: 18px; }
+    .profile-card p { margin: 0; font-size: 14px; color: #777; }
+    #hero-actions.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">MySite</div>
+    <div>
+      <button id="login-btn">로그인</button>
+      <button id="logout-btn" class="secondary" style="display:none;">로그아웃</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="avatar"><img src="images/profile-1.jpg" alt="Bradley Hwang" /></div>
+    <h1>Bradley Hwang</h1>
+    <p class="title">Country Manager, Korea @ Okta</p>
+    <p class="location">Seoul, South Korea</p>
+    <p class="education">Helsinki MBA</p>
+    <div class="links">
+      <a href="https://www.linkedin.com/in/bradley-hwang-b0536213/" target="_blank" rel="noopener">LinkedIn 프로필 보기</a>
+    </div>
+  </section>
+
+  <main>
+    <section class="card">
+      <h2>About</h2>
+      <div class="about-content">
+        <img src="images/profile-2.jpg" alt="Bradley Hwang" />
+        <p>
+          18년 이상 IT/통신 업계에서 세일즈, 채널·파트너십 리더십을 쌓아온 비즈니스 리더입니다.
+          Cisco, Citrix, DocuSign, BytePlus를 거쳐 현재 Okta Korea Country Manager로서
+          한국 시장의 성장 전략을 총괄하고 있습니다. Helsinki에서 MBA를 취득했습니다.
+        </p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Experience</h2>
+      <ul class="timeline">
+        <li>
+          <div class="company">Okta</div>
+          <div class="role">Country Manager, Korea</div>
+          <div class="period">2025.04 – 현재</div>
+          <ul>
+            <li>한국 시장 세일즈 및 파트너 전략 총괄</li>
+          </ul>
+        </li>
+        <li>
+          <div class="company">Okta</div>
+          <div class="role">Regional Sales Manager</div>
+          <div class="period">2025.01 – 2025.04</div>
+        </li>
+        <li>
+          <div class="company">BytePlus</div>
+          <div class="role">Global Channel Director</div>
+          <div class="period">2023.06 – 2024.12 · Singapore</div>
+          <ul>
+            <li>목표 초과 달성 및 전년 대비 성장 견인</li>
+            <li>다수 기술 파트너·ISV와 에코시스템 전략 수립 및 실행</li>
+            <li>주요 클라우드 파트너와 co-sell 확대로 신규 리드 창출</li>
+          </ul>
+        </li>
+        <li>
+          <div class="company">DocuSign</div>
+          <div class="role">Channel Resell Director</div>
+          <div class="period">2022.08 – 2022.12 · Singapore</div>
+          <ul>
+            <li>신규 파트너 발굴 및 온보딩으로 신규 고객 확보</li>
+            <li>주요 CRM 플랫폼과의 전략적 연동으로 세일즈 프로세스 효율화</li>
+          </ul>
+        </li>
+        <li>
+          <div class="company">Cisco</div>
+          <div class="role">Head of SMB Sales</div>
+          <div class="period">2020.04 – 2022.08 · South Korea</div>
+          <ul>
+            <li>SMB 세일즈 조직 관리 및 목표 달성</li>
+            <li>프로세스 자동화로 파트너 만족도 향상</li>
+          </ul>
+        </li>
+        <li>
+          <div class="company">Citrix</div>
+          <div class="role">Head of Corporate Sales</div>
+          <div class="period">2019.01 – 2020.04 · Seoul</div>
+        </li>
+        <li>
+          <div class="company">Citrix</div>
+          <div class="role">Channel and Alliances Manager</div>
+          <div class="period">2016.10 – 2018.12 · Seoul</div>
+          <ul>
+            <li>채널·얼라이언스 전략 수립으로 활성 파트너 수 및 매출 성장</li>
+          </ul>
+        </li>
+        <li>
+          <div class="company">Cisco</div>
+          <div class="role">Account Manager</div>
+          <div class="period">2008.04 – 2016.10 · Seoul</div>
+          <ul>
+            <li>주요 엔터프라이즈 계정 관리 및 클라우드/컨택센터 솔루션 구축</li>
+          </ul>
+        </li>
+        <li>
+          <div class="company">LGCNS</div>
+          <div class="role">Manager</div>
+          <div class="period">2005.04 – 2008.04 · Seoul</div>
+        </li>
+        <li>
+          <div class="company">링네트 (Ringnet)</div>
+          <div class="role">Systems Engineer</div>
+          <div class="period">2002.04 – 2005.04 · Seoul</div>
+        </li>
+        <li>
+          <div class="company">PSINet</div>
+          <div class="role">Systems Engineer</div>
+          <div class="period">2000.09 – 2001.12 · Seoul</div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="card booking-card">
+      <h2>일정 예약</h2>
+      <p id="booking-placeholder">예약 링크 준비 중입니다. Google Calendar 약속 일정 링크가 등록되면 여기서 바로 예약할 수 있습니다.</p>
+      <a id="booking-link" href="#" style="display:none;">
+        <button>일정 잡기</button>
+      </a>
+    </section>
+
+    <div id="hero-actions">
+      <p>Auth0로 안전하게 로그인해서 더 많은 정보를 확인하세요.</p>
+      <button id="login-btn-hero">로그인 / 회원가입</button>
+    </div>
+
+    <div class="profile-card" id="profile-card">
+      <img id="profile-picture" src="" alt="profile" />
+      <h2 id="profile-name"></h2>
+      <p id="profile-email"></p>
+    </div>
+  </main>
+
+  <script>
+    let auth0Client = null;
+
+    async function configureClient() {
+      if (!window.AUTH0_CONFIG) {
+        throw new Error("config.js가 없습니다. config.example.js를 복사해 config.js를 만들고 Auth0 값을 채워주세요.");
+      }
+      auth0Client = await auth0.createAuth0Client({
+        domain: window.AUTH0_CONFIG.domain,
+        clientId: window.AUTH0_CONFIG.clientId,
+        authorizationParams: {
+          redirect_uri: window.location.origin,
+        },
+      });
+    }
+
+    async function updateUI() {
+      const isAuthenticated = await auth0Client.isAuthenticated();
+
+      document.getElementById("login-btn").style.display = isAuthenticated ? "none" : "inline-block";
+      document.getElementById("logout-btn").style.display = isAuthenticated ? "inline-block" : "none";
+      document.getElementById("hero-actions").classList.toggle("hidden", isAuthenticated);
+      document.getElementById("profile-card").style.display = isAuthenticated ? "block" : "none";
+
+      if (isAuthenticated) {
+        const user = await auth0Client.getUser();
+        document.getElementById("profile-picture").src = user.picture || "";
+        document.getElementById("profile-name").textContent = user.name || "";
+        document.getElementById("profile-email").textContent = user.email || "";
+      }
+    }
+
+    function login() {
+      auth0Client.loginWithRedirect();
+    }
+
+    function logout() {
+      auth0Client.logout({
+        logoutParams: { returnTo: window.location.origin },
+      });
+    }
+
+    window.onload = async () => {
+      try {
+        await configureClient();
+
+        const query = window.location.search;
+        if (query.includes("code=") && query.includes("state=")) {
+          await auth0Client.handleRedirectCallback();
+          window.history.replaceState({}, document.title, "/");
+        }
+
+        await updateUI();
+      } catch (err) {
+        console.error("Auth0 init/callback error:", err);
+        alert("Auth0 오류: " + err.message);
+      }
+
+      document.getElementById("login-btn").addEventListener("click", login);
+      document.getElementById("login-btn-hero").addEventListener("click", login);
+      document.getElementById("logout-btn").addEventListener("click", logout);
+    };
+  </script>
+</body>
+</html>
